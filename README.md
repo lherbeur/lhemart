@@ -19,6 +19,7 @@ d. npm was used for managing the dependencies.
 e. React
 f. Solidity 
 
+
 # Installation
 a. Clone the github repo.
 b. cd into the root of the project.
@@ -31,3 +32,6 @@ e. run the following:
     truffle.cmd migrate
     npm run start - This should start the app in the browser at http://localhost:3000/.
 
+
+# Other notes
+The Oraclize contract does not have an interface to it. The contract might be run in the Oraclize IDE. 

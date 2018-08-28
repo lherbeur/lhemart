@@ -366,8 +366,8 @@ contract LheMart
     /**
     * @dev Fallback function
     */
-    function () external payable {
-
+    function () {
+        throw();
     }
 
 }
