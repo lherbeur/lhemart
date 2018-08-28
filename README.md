@@ -26,6 +26,7 @@ c. Install metamask
 d. Install ganache, start it up and have it set to http://localhost:7545. 
 e. run the following: 
     npm install
+	truffle.cmd install oraclize-api
     truffle.cmd compile
     truffle.cmd migrate
     npm run start - This should start the app in the browser at http://localhost:3000/.
