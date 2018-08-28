@@ -367,7 +367,7 @@ contract LheMart
     * @dev Fallback function
     */
     function () {
-        throw();
+        throw;
     }
 
 }
