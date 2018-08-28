@@ -1,7 +1,15 @@
+
+/*
+Copyright Lhemart August 2018
+*/
 pragma solidity ^0.4.21;
 
 import "./library/SafeMath.sol";
 
+
+/** @title LheMart
+* @author Wunmi GEORGE
+*/
 contract LheMart
 {
     using SafeMath for uint;
@@ -47,14 +55,23 @@ contract LheMart
         owner = msg.sender;
     }
 
+    /**
+    * @notice Add `newAdmin` as admin.
+    * @dev This function adds an admin
+    * @param newAdmin - address of admin to add
+    */
     function addAdmin (address newAdmin) public     
     {
         require(owner == msg.sender);
 
         participantRoles[newAdmin] = "admin";
-        emit AdminAdded(newAdmin, block.timestamp);
+        emit AdminAdded (newAdmin, block.timestamp);
     }
 
+    /**
+    * @dev This function removes an admin
+    * @param admin - address of admin to remove
+    */
     function removeAdmin (address admin) public     
     {
        require(owner == msg.sender);
@@ -63,6 +80,10 @@ contract LheMart
         emit AdminRemoved(admin, block.timestamp);
     }
   
+    /**
+    * @dev This function adds a store owner
+    * @param newStoreOwner - address of new store owner
+    */
     function addStoreOwner (address newStoreOwner) public
     {
         require(participantRoles[msg.sender] == "admin");
@@ -70,8 +91,12 @@ contract LheMart
         participantRoles[newStoreOwner] = "storeowner";
         allStoreOwners.push(newStoreOwner);
         emit StoreOwnerAdded(newStoreOwner, msg.sender, block.timestamp);
-    }
+    }    
     
+    /**
+    * @dev This function removes a store owner
+    * @param storeOwner - address of store owner to remove
+    */
     function removeStoreOwner (address storeOwner) public     
     {
         require(participantRoles[msg.sender] == "admin");
@@ -80,6 +105,11 @@ contract LheMart
         emit StoreOwnerRemoved(storeOwner, msg.sender, block.timestamp);
     }
 
+    /**
+    * @dev This function creates a store 
+    * @param name - name of the store 
+    * @param description - short description of store
+    */
     function createStore (bytes32 name, bytes32 description) public     
     {
         require(participantRoles[msg.sender] == "storeowner");
@@ -93,6 +123,10 @@ contract LheMart
         emit StoreCreated(msg.sender, name, description, block.timestamp);
     }
     
+    /**
+    * @dev This function removes a store 
+    * @param name - name of the store
+    */
     function removeStore (bytes32 name) public     
     {
         require(participantRoles[msg.sender] == "storeowner");
@@ -105,6 +139,11 @@ contract LheMart
         emit StoreRemoved(msg.sender, name, block.timestamp);
     }
 
+    /**
+    * @dev This function gets all the stores owned by a particular store owner
+    * @param storeOwner - address of the store owner
+    * @param nextIndex - next index used for iteratively getting all the stores of a particular store owner
+    */
     function getAllOwnerStores (address storeOwner, uint nextIndex) public
     view 
     returns (address, bytes32[5], bytes32[5], uint, bool)    
@@ -142,6 +181,14 @@ contract LheMart
         return (storeOwnerAddr, storeNames, storeDescription, nextIndex, endOfStoresReached);
     }
 
+    /**
+    * @dev This function adds an item to a store
+    * @param storeName - name of the store
+    * @param name - name of the item to be added 
+    * @param description - description of the item
+    * @param price - price of the item
+    * @param qtyLeft - quantity of the item available
+    */
     function addItemToStore (bytes32 storeName, bytes32 name, bytes32 description, uint price, uint qtyLeft) public     
     {
         require(participantRoles[msg.sender] == "storeowner");
@@ -166,6 +213,11 @@ contract LheMart
         emit ItemAddedToStore(msg.sender, storeName, name, description, price, qtyLeft, block.timestamp);
     }
 
+    /**
+    * @dev This function removes an item from a store
+    * @param storeName - name of the store
+    * @param itemName - name of the item to be removed
+    */
     function removeItemFromStore (bytes32 storeName, bytes32 itemName) public     
     {
         require(participantRoles[msg.sender] == "storeowner");
@@ -184,6 +236,12 @@ contract LheMart
         emit ItemRemovedFromStore(msg.sender, storeName, itemName, block.timestamp);
     }
     
+    /**
+    * @dev This function gets all the items in a store
+    * @param storeOwner - address of the store owner
+    * @param storeName - name of the store from which to get items
+    * @param nextIndex - next index used for iteratively getting all the items in the store
+    */
     function getItemsInStore (address storeOwner, bytes32 storeName, uint nextIndex) public
     view
     returns (bytes32 [5], uint [5], uint [5], uint, bool)
@@ -193,6 +251,12 @@ contract LheMart
         return getItemDetails(nextIndex, storeOwner, storeIndex);
     }
 
+    /**
+    * @dev This function gets the details of items in a store. Helper for the 'getItemsInStore' function
+    * @param storeOwner - address of the store owner
+    * @param storeIndex - index of the store
+    * @param nextIndex - next index used for iteratively getting all the items in the store
+    */
     function getItemDetails(uint nextIndex, address storeOwner, uint storeIndex)
     view
     returns (bytes32 [5] itemName, uint [5] itemPrice, uint[5] quantityLeft, uint nextIndexx, bool endOfItemsReached) //bytes32 [5],
@@ -227,6 +291,11 @@ contract LheMart
         nextIndexx += 5;
     }
 
+    /**
+    * @dev This function gets the store of an onwer. Serves as a helper to the getItemDetails function
+    * @param storeOwner - address of the store owner
+    * @param storeIndex - index of the store in the stores mapping
+    */
     function getStoreOfOwner(address storeOwner, uint storeIndex)
     private
     view
@@ -235,10 +304,22 @@ contract LheMart
         return stores[storeOwner][storeIndex];
     }
 
+    /**
+    * @dev This function gets the index of a store form the storeIndices mapping  
+    * @param storeOwner - address of the store owner
+    * @param storeName - name of the store, whose index is to be retrieved
+    */
     function getStoreIndex(address storeOwner, bytes32 storeName) public view returns(uint){
         return storeIndices[storeOwner][storeName];
     }
 
+    /**
+    * @dev This function allows a buyer to buy an item from a store.
+    * @param storeOwner - address of the store owner
+    * @param storeName - name of the store 
+    * @param itemName - name of the item to be purchased 
+    * @param qtyToBuy - amount of the item to be purchased 
+    */
     function purchaseItem(address storeOwner, bytes32 storeName, bytes32 itemName, uint qtyToBuy) public
     payable
     {
@@ -265,6 +346,9 @@ contract LheMart
         emit ItemPurchased(storeOwner, msg.sender, storeName, itemName, qtyToBuy, block.timestamp);
     }
 
+    /**
+    * @dev This functiona allows a store owner to withdraw sales proceeds that have accrued to the store owner
+    */
     function withdrawSalesBalance() public
     {
         require(participantRoles[msg.sender] == "storeowner");
@@ -279,6 +363,9 @@ contract LheMart
         emit StoreOwnerWithdrawnBalance(msg.sender, amountPayable, block.timestamp);
     }
 
+    /**
+    * @dev Fallback function
+    */
     function () external payable {
 
     }

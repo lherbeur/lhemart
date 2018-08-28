@@ -1,7 +1,9 @@
-pragma solidity ^0.4.11;
-import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
+pragma solidity ^0.4.0;
 
-contract ExampleContract is usingOraclize {
+import "../installed_contracts/oraclize-api/contracts/usingOraclize.sol";
+
+
+contract ContractUsingOraclize is usingOraclize {
 
     string public EURGBP;
     // uint256 [] public EURGBP;
@@ -12,7 +14,7 @@ contract ExampleContract is usingOraclize {
 
     // This example requires funds to be send along with the contract deployment
     // transaction
-    function ExampleContract() payable {
+    function ContractUsingOraclize() payable {
         oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
         oraclize_setCustomGasPrice(4000000000);
         LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query.");
