@@ -1,6 +1,6 @@
+const hex2ascii = require('hex2ascii')
+
 var LheMart = artifacts.require("LheMart");
-//var Vesting = artifacts.require("Vesting");
-// var DeployedAddresses = artifacts.require("DeployedAddresses");
 
 
 contract('LheMart', function(accounts) {
@@ -23,7 +23,8 @@ contract('LheMart', function(accounts) {
 
         }).then(function(role) {
 
-          assert.equal(role, "admin", "Admin not correctly added");
+		  var roleValue = hex2ascii(role);
+          assert.equal(roleValue, "admin", "Admin not correctly added");
        });
 	});
 	
@@ -40,7 +41,8 @@ contract('LheMart', function(accounts) {
 
         }).then(function(role) {
 
-          assert.equal(role, "", "Admin not correctly removed");
+		  var roleValue = hex2ascii(role);
+          assert.equal(roleValue.trim(), "0x0000000000", "Admin not correctly removed");
        });
 	});
 	
@@ -62,7 +64,8 @@ contract('LheMart', function(accounts) {
 		  return lheMartInstance.participantRoles(testAddress);
 		 }).then(function(role) {
 
-          assert.equal(role, "storeowner", "Store owner not correctly added");
+		  var roleValue = hex2ascii(role);
+          assert.equal(roleValue, "storeowner", "Store owner not correctly added");
        });
 	});
 	
@@ -87,7 +90,8 @@ contract('LheMart', function(accounts) {
 		  return lheMartInstance.participantRoles(testAddress);
 		 }).then(function(role) {
 
-          assert.equal(role, "", "Store owner not correctly removed");
+		  var roleValue = hex2ascii(role);
+          assert.equal(roleValue, "0x0000000000", "Store owner not correctly removed");
        });
 	});
 	
@@ -106,13 +110,18 @@ contract('LheMart', function(accounts) {
 		  lheMartInstance.addStoreOwner(testAddress, { from: adminAddress});
 		 }).then(function() {
 		
-		  lheMartInstance.createStore("My store", "A store to sell things I want to sell.", { from: testAddress});
+		  lheMartInstance.createStore("First store", "A first store to sell things I want to sell.", { from: testAddress});
 		 }).then(function() {
 		
-		  return lheMartInstance.stores(testAddress).length;
-		 }).then(function(storesLength) {
+		  lheMartInstance.createStore("Second store", "A second store to sell things I want to sell.", { from: testAddress});
+		 }).then(function() {
+		
+		  return lheMartInstance.storeIndices(testAddress, "Second store"); 
+		  
+		 }).then(function(storeIndex) {
 
-          assert.equal(storesLength, 1, "Store not correctly added");
+		  var storeIndexValue = parseInt(storeIndex);
+          assert.equal(storeIndexValue, 1, "Store not correctly added");
        });
 	});
 	
